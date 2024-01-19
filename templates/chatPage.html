@@ -1,0 +1,53 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chatPage.css')}}">
+</head>
+<body>
+    <div id = top>
+    <h3>welcome to your profile, {{username}}</h3>
+    <a href="/">Click here to logout</a>
+    </div>
+    <br>
+    <form action="/sendChat" method="post">
+        <input type="text" name="username" value="{{username}}" style="display:none;">
+        <input type="text" name="chat" id="chat" placeholder="Enter Chat Here">
+        <input type="submit" value="send">
+    </form>
+
+    <div id="chatBox">
+        
+    </div>
+
+    <script>
+
+        firstTime = true;
+
+        function scrollToBottom() {
+            var chatBox = document.getElementById("chatBox");
+            chatBox.scrollTop = chatBox.scrollHeight;
+            firstTime = false;
+        }
+    
+        
+        
+        function fetchMessages() {
+            fetch('/getMessages')
+                .then(response => response.json())
+                .then(data => {
+                    const chatBox = document.getElementById('chatBox');
+                    chatBox.innerHTML = data.messages.map(message => `<p>${message}</p>`).join('');
+                })
+                .catch(error => console.error('Error fetching messages:', error));
+                if (firstTime)
+                {
+                    scrollToBottom();
+                    firstTime = false;
+                }
+        }
+        setInterval(fetchMessages, 1000);
+    </script>
+</body>
+</html>
